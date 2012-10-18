@@ -8,45 +8,44 @@
  * @link https://status.dropbox.com Dropbox status
  * @package Dropbox
  */
-namespace Dropbox;
 
 class API
 {
     // API Endpoints
     const API_URL     = 'https://api.dropbox.com/1/';
     const CONTENT_URL = 'https://api-content.dropbox.com/1/';
-    
+
     /**
      * OAuth consumer object
-     * @var null|OAuth\Consumer 
+     * @var null|OAuth\Consumer
      */
     private $OAuth;
-    
+
     /**
      * The root level for file paths
      * Either `dropbox` or `sandbox` (preferred)
      * @var null|string
      */
     private $root;
-    
+
     /**
      * Format of the API response
      * @var string
      */
     private $responseFormat = 'php';
-    
+
     /**
      * JSONP callback
      * @var string
      */
     private $callback = 'dropboxCallback';
-    
+
     /**
      * Chunk size used for chunked uploads
      * @see \Dropbox\API::chunkedUpload()
      */
     private $chunkSize = 4194304;
-    
+
     /**
      * Set the OAuth consumer object
      * See 'General Notes' at the link below for information on access type
@@ -54,12 +53,12 @@ class API
      * @param OAuth\Consumer\ConsumerAbstract $OAuth
      * @param string $root Dropbox app access type
      */
-    public function __construct(OAuth\Consumer\ConsumerAbstract $OAuth, $root = 'sandbox')
+    public function __construct($OAuth, $root = 'sandbox')
     {
         $this->OAuth = $OAuth;
         $this->setRoot($root);
     }
-    
+
     /**
     * Set the root level
     * @param mixed $root
@@ -74,7 +73,7 @@ class API
             $this->root = $root;
         }
     }
-    
+
     /**
      * Retrieves information about the user's account
      * @return object stdClass
@@ -84,7 +83,7 @@ class API
         $response = $this->fetch('POST', self::API_URL, 'account/info');
         return $response;
     }
-    
+
     /**
      * Uploads a physical file from disk
      * Dropbox impose a 150MB limit to files uploaded via the API. If the file
@@ -112,11 +111,11 @@ class API
             }
             throw new Exception('File exceeds 150MB upload limit');
         }
-        
+
         // Throw an Exception if the file does not exist
         throw new Exception('Local file ' . $file . ' does not exist');
     }
-    
+
     /**
      * Uploads file data from a stream
      * Note: This function is experimental and requires further testing
@@ -135,7 +134,7 @@ class API
         $response = $this->fetch('PUT', self::CONTENT_URL, $call, $params);
         return $response;
     }
-    
+
     /**
      * Uploads large files to Dropbox in mulitple chunks
      * @param string $file Absolute path to the file to be uploaded
@@ -151,30 +150,30 @@ class API
                 // Set initial upload ID and offset
                 $uploadID = null;
                 $offset = 0;
-                
+
                 // Read from the file handle until EOF, uploading each chunk
                 while ($data = fread($handle, $this->chunkSize)) {
                     // Open a temporary file handle and write a chunk of data to it
                     $chunkHandle = fopen('php://temp', 'rw');
                     fwrite($chunkHandle, $data);
-                    
+
                     // Set the file, request parameters and send the request
                     $this->OAuth->setInFile($chunkHandle);
                     $params = array('upload_id' => $uploadID, 'offset' => $offset);
                     $response = $this->fetch('PUT', self::CONTENT_URL, 'chunked_upload', $params);
-                    
+
                     // On subsequent chunks, use the upload ID returned by the previous request
                     if (isset($response['body']->upload_id)) {
                         $uploadID = $response['body']->upload_id;
                     }
-                    
+
                     // Set the data offset
                     $offset += mb_strlen($data, '8bit');
-                    
+
                     // Close the file handle for this chunk
                     fclose($chunkHandle);
                 }
-                
+
                 // Complete the chunked upload
                 $filename = (is_string($filename)) ? $filename : basename($file);
                 $call = 'commit_chunked_upload/' . $this->root . '/' . $this->encodePath($path . $filename);
@@ -185,11 +184,11 @@ class API
                 throw new Exception('Could not open ' . $file . ' for reading');
             }
         }
-        
+
         // Throw an Exception if the file does not exist
         throw new Exception('Local file ' . $file . ' does not exist');
     }
-    
+
     /**
      * Downloads a file
      * Returns the base filename, raw file data and mime type returned by Fileinfo
@@ -204,7 +203,7 @@ class API
         if ($this->responseFormat !== 'php') {
             throw new Exception('This method only supports the `php` response format');
         }
-        
+
         $handle = null;
         if ($outFile !== false) {
             // Create a file handle if $outFile is specified
@@ -214,12 +213,12 @@ class API
                 $this->OAuth->setOutFile($handle);
             }
         }
-        
-        $file = $this->encodePath($file);        
+
+        $file = $this->encodePath($file);
         $call = 'files/' . $this->root . '/' . $file;
         $params = array('rev' => $revision);
         $response = $this->fetch('GET', self::CONTENT_URL, $call, $params);
-        
+
         // Close the file handle if one was opened
         if ($handle) fclose($handle);
 
@@ -230,7 +229,7 @@ class API
             'data' => $response['body'],
         );
     }
-    
+
     /**
      * Retrieves file and folder metadata
      * @param string $path The path to the file/folder, relative to root
@@ -239,7 +238,7 @@ class API
      * @param string $hash Metadata hash to compare against
      * @param bool $list Return contents field with response
      * @param bool $deleted Include files/folders that have been deleted
-     * @return object stdClass 
+     * @return object stdClass
      */
     public function metaData($path = null, $rev = null, $limit = 10000, $hash = false, $list = true, $deleted = false)
     {
@@ -254,7 +253,7 @@ class API
         $response = $this->fetch('POST', self::API_URL, $call, $params);
         return $response;
     }
-    
+
     /**
      * Return "delta entries", intructing you how to update
      * your application state to match the server's state
@@ -269,7 +268,7 @@ class API
         $response = $this->fetch('POST', self::API_URL, $call, $params);
         return $response;
     }
-    
+
     /**
      * Obtains metadata for the previous revisions of a file
      * @param string Path to the file, relative to root
@@ -285,7 +284,7 @@ class API
         $response = $this->fetch('GET', self::API_URL, $call, $params);
         return $response;
     }
-    
+
     /**
      * Restores a file path to a previous revision
      * @param string $file Path to the file, relative to root
@@ -299,7 +298,7 @@ class API
         $response = $this->fetch('POST', self::API_URL, $call, $params);
         return $response;
     }
-    
+
     /**
      * Returns metadata for all files and folders that match the search query
      * @param mixed $query The search string. Must be at least 3 characters long
@@ -319,7 +318,7 @@ class API
         $response = $this->fetch('GET', self::API_URL, $call, $params);
         return $response;
     }
-    
+
     /**
      * Creates and returns a shareable link to files or folders
      * The link returned is for a preview page from which the user an choose to
@@ -333,7 +332,7 @@ class API
         $response = $this->fetch('POST', self::API_URL, $call);
         return $response;
     }
-    
+
     /**
      * Returns a link directly to a file
      * @param string $path The path to the media file you want a direct link to
@@ -345,7 +344,7 @@ class API
         $response = $this->fetch('POST', self::API_URL, $call);
         return $response;
     }
-    
+
     /**
      * Gets a thumbnail for an image
      * @param string $file The path to the image you wish to thumbnail
@@ -359,20 +358,20 @@ class API
         if ($this->responseFormat !== 'php') {
             throw new Exception('This method only supports the `php` response format');
         }
-        
+
         $format = strtoupper($format);
         // If $format is not 'PNG', default to 'JPEG'
         if ($format != 'PNG') $format = 'JPEG';
-        
+
         $size = strtolower($size);
         $sizes = array('s', 'm', 'l', 'xl', 'small', 'medium', 'large');
         // If $size is not valid, default to 'small'
         if (!in_array($size, $sizes)) $size = 'small';
-        
+
         $call = 'thumbnails/' . $this->root . '/' . $this->encodePath($file);
         $params = array('format' => $format, 'size' => $size);
         $response = $this->fetch('GET', self::CONTENT_URL, $call, $params);
-        
+
         return array(
             'name' => basename($file),
             'mime' => $this->getMimeType($response['body']),
@@ -380,7 +379,7 @@ class API
             'data' => $response['body'],
         );
     }
-    
+
     /**
      * Creates and returns a copy_ref to a file
      * This reference string can be used to copy that file to another user's
@@ -394,7 +393,7 @@ class API
         $response = $this->fetch('GET', self::API_URL, $call);
         return $response;
     }
-    
+
     /**
      * Copies a file or folder to a new location
      * @param string $from File or folder to be copied, relative to root
@@ -410,16 +409,16 @@ class API
             'from_path' => $this->normalisePath($from),
             'to_path' => $this->normalisePath($to),
         );
-        
+
         if ($fromCopyRef) {
             $params['from_path'] = null;
             $params['from_copy_ref'] = $fromCopyRef;
         }
-        
+
         $response = $this->fetch('POST', self::API_URL, $call, $params);
         return $response;
     }
-    
+
     /**
      * Creates a folder
      * @param string New folder to create relative to root
@@ -432,7 +431,7 @@ class API
         $response = $this->fetch('POST', self::API_URL, $call, $params);
         return $response;
     }
-    
+
     /**
      * Deletes a file or folder
      * @param string $path The path to the file or folder to be deleted
@@ -445,7 +444,7 @@ class API
         $response = $this->fetch('POST', self::API_URL, $call, $params);
         return $response;
     }
-    
+
     /**
      * Moves a file or folder to a new location
      * @param string $from File or folder to be moved, relative to root
@@ -463,7 +462,7 @@ class API
         $response = $this->fetch('POST', self::API_URL, $call, $params);
         return $response;
     }
-    
+
     /**
      * Intermediate fetch function
      * @param string $method The HTTP method
@@ -476,7 +475,7 @@ class API
     {
         // Make the API call via the consumer
         $response = $this->OAuth->fetch($method, $url, $call, $params);
-        
+
         // Format the response and return
         switch ($this->responseFormat) {
             case 'json':
@@ -488,7 +487,7 @@ class API
                 return $response;
         }
     }
-    
+
     /**
      * Set the API response format
      * @param string $format One of php, json or jsonp
@@ -503,7 +502,7 @@ class API
             $this->responseFormat = $format;
         }
     }
-    
+
     /**
      * Set the chunk size for chunked uploads
      * If $chunkSize is empty, set to 4194304 bytes (4 MB)
@@ -519,7 +518,7 @@ class API
             $this->chunkSize = $chunkSize;
         }
     }
-    
+
     /**
     * Set the JSONP callback function
     * @param string $function
@@ -529,7 +528,7 @@ class API
     {
         $this->callback = $function;
     }
-    
+
     /**
      * Get the mime type of downloaded file
      * If the Fileinfo extension is not loaded, return false
@@ -540,7 +539,7 @@ class API
     private function getMimeType($data, $isFilename = false)
     {
         if (extension_loaded('fileinfo')) {
-            $finfo = new \finfo(FILEINFO_MIME);
+            $finfo = new finfo(FILEINFO_MIME);
             if ($isFilename !== false) {
                 return $finfo->file($data);
             }
@@ -548,7 +547,7 @@ class API
         }
         return false;
     }
-    
+
     /**
      * Trim the path of forward slashes and replace
      * consecutive forward slashes with a single slash
@@ -560,7 +559,7 @@ class API
         $path = preg_replace('#/+#', '/', trim($path, '/'));
         return $path;
     }
-    
+
     /**
      * Encode the path, then replace encoded slashes
      * with literal forward slash characters
