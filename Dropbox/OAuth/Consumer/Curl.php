@@ -8,7 +8,7 @@
 * @subpackage Consumer
 */
 
-class Curl extends ConsumerAbstract
+class OAuth_Consumer_Curl extends OAuth_Consumer_ConsumerAbstract
 {
     /**
      * Default cURL options
