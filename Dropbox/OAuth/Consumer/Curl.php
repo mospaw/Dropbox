@@ -30,7 +30,7 @@ class OAuth_Consumer_Curl extends OAuth_Consumer_ConsumerAbstract
      * @param $storage
      * @param string $callback
      */
-    public function __construct($key, $secret, $storage, $callback = null)
+    public function __construct($key, $secret)
     {
         // Check the cURL extension is loaded
         if (!extension_loaded('curl')) {
@@ -39,9 +39,6 @@ class OAuth_Consumer_Curl extends OAuth_Consumer_ConsumerAbstract
 
         $this->consumerKey = $key;
         $this->consumerSecret = $secret;
-        $this->storage = $storage;
-        $this->callback = $callback;
-        $this->authenticate();
     }
 
     /**

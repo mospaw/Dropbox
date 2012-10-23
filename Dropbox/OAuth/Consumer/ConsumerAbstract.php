@@ -37,51 +37,21 @@ abstract class OAuth_Consumer_ConsumerAbstract
     protected $inFile = null;
 
     /**
-     * Authenticate using 3-legged OAuth flow, firstly
-     * checking we don't already have tokens to use
-     * @return void
+     * OAuth token
+     * @var stdclass
      */
-    protected function authenticate()
-    {
-        if ((!$this->storage->get('access_token'))) {
-            try {
-                $this->getAccessToken();
-            } catch(Exception $e) {
-                $this->getRequestToken();
-                $this->authorise();
-            }
-        }
-    }
+    private $token = null;
 
     /**
     * Acquire an unauthorised request token
     * @link http://tools.ietf.org/html/rfc5849#section-2.1
     * @return void
     */
-    private function getRequestToken()
+    public function getRequestToken()
     {
-        // Nullify any request token we already have
-        $this->storage->set(null, 'request_token');
         $url = API::API_URL . self::REQUEST_TOKEN_METHOD;
         $response = $this->fetch('POST', $url, '');
-        $token = $this->parseTokenString($response['body']);
-        $this->storage->set($token, 'request_token');
-    }
-
-    /**
-     * Obtain user authorisation
-     * The user will be redirected to Dropbox' web endpoint
-     * @link http://tools.ietf.org/html/rfc5849#section-2.2
-     * @return void
-     */
-    private function authorise()
-    {
-        // Only redirect if using CLI
-        if (PHP_SAPI !== 'cli') {
-            $url = $this->getAuthoriseUrl();
-            header('Location: ' . $url);
-            exit;
-        }
+        return $this->parseTokenString($response['body']);
     }
 
     /**
@@ -90,14 +60,10 @@ abstract class OAuth_Consumer_ConsumerAbstract
     */
     public function getAuthoriseUrl()
     {
-        // Get the request token
-        $token = $this->getToken();
-
         // Prepare request parameters
         $params = array(
-            'oauth_token' => $token->oauth_token,
-            'oauth_token_secret' => $token->oauth_token_secret,
-            'oauth_callback' => $this->callback,
+            'oauth_token' => $this->token->oauth_token,
+            'oauth_token_secret' => $this->token->oauth_token_secret,
         );
 
         // Build the URL and redirect the user
@@ -116,27 +82,7 @@ abstract class OAuth_Consumer_ConsumerAbstract
     {
         // Get the signed request URL
         $response = $this->fetch('POST', API::API_URL, self::ACCESS_TOKEN_METHOD);
-        $token = $this->parseTokenString($response['body']);
-        $this->storage->set($token, 'access_token');
-    }
-
-    /**
-     * Get the request/access token
-     * This will return the access/request token depending on
-     * which stage we are at in the OAuth flow, or a dummy object
-     * if we have not yet started the authentication process
-     * @return object stdClass
-     */
-    private function getToken()
-    {
-        if (!$token = $this->storage->get('access_token')) {
-            if (!$token = $this->storage->get('request_token')) {
-                $token = new stdClass();
-                $token->oauth_token = null;
-                $token->oauth_token_secret = null;
-            }
-        }
-        return $token;
+        return $this->parseTokenString($response['body']);
     }
 
     /**
@@ -152,7 +98,12 @@ abstract class OAuth_Consumer_ConsumerAbstract
     protected function getSignedRequest($method, $url, $call, array $additional = array())
     {
         // Get the request/access token
-        $token = $this->getToken();
+        $token = $this->token;
+        if (!$token) {
+            $token = new \stdClass();
+            $token->oauth_token = null;
+            $token->oauth_token_secret = null;
+        }
 
         // Generate a random string for the request
         $nonce = md5(microtime(true) . uniqid('', true));
@@ -224,6 +175,15 @@ abstract class OAuth_Consumer_ConsumerAbstract
         }
 
         return $signature;
+    }
+
+    /**
+     * Set the token to use for OAuth requests
+     * @param stdtclass $token A key secret pair
+     */
+    public function setToken($token) {
+        $this->token = $token;
+        return $this;
     }
 
     /**

@@ -17,7 +17,6 @@ ini_set('html_errors', 'Off');
 session_start();
 
 // Register a simple autoload function
-spl_autoload_register(function($class){
-	$class = str_replace('\\', '/', $class);
-	require_once('../' . $class . '.php');
+spl_autoload_register(function($class) {
+	require_once('../Dropbox/' . implode('/', explode('_', $class)) . '.php');
 });

@@ -42,9 +42,12 @@ while(empty($consumerSecret)){
 
 try {
 	// Set up the OAuth consumer
-	$storage = new \Dropbox\OAuth\Storage\Session;
-	$OAuth = new \Dropbox\OAuth\Consumer\Curl($consumerKey, $consumerSecret, $storage);
-	
+	$OAuth = new OAuth_Consumer_Curl($consumerKey, $consumerSecret);
+
+	$token = $OAuth->getRequestToken();
+
+	$OAuth->setToken($token);
+
 	// Generate the authorisation URL and prompt user
 	echo "Generating Authorisation URL...\r\n\r\n";
 	echo "===== Begin Authorisation URL =====\r\n";
@@ -53,17 +56,17 @@ try {
 	echo "Visit the URL above and allow the SDK to connect to your account\r\n";
 	echo "Press any key once you have completed this step...";
 	fgets(STDIN);
-	
+
 	// Acquire the access token
 	echo "Acquiring access token...\r\n";
-	
+
 	$OAuth->getAccessToken();
 	$token = serialize(array(
-		'token' => $storage->get('access_token'),
+		'token' => $token,
 		'consumerKey' => $consumerKey,
 		'consumerSecret' => $consumerSecret,
 	));
-	
+
 	// Write the access token to disk
 	if(@file_put_contents('oauth.token', $token) === false){
 		throw new \Dropbox\Exception('Unable to write token to file');
