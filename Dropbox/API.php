@@ -29,18 +29,6 @@ class API
     private $root;
 
     /**
-     * Format of the API response
-     * @var string
-     */
-    private $responseFormat = 'php';
-
-    /**
-     * JSONP callback
-     * @var string
-     */
-    private $callback = 'dropboxCallback';
-
-    /**
      * Chunk size used for chunked uploads
      * @see \Dropbox\API::chunkedUpload()
      */
@@ -199,11 +187,6 @@ class API
      */
     public function getFile($file, $outFile = false, $revision = null)
     {
-        // Only allow php response format for this call
-        if ($this->responseFormat !== 'php') {
-            throw new Exception('This method only supports the `php` response format');
-        }
-
         $handle = null;
         if ($outFile !== false) {
             // Create a file handle if $outFile is specified
@@ -354,11 +337,6 @@ class API
      */
     public function thumbnails($file, $format = 'JPEG', $size = 'small')
     {
-        // Only allow php response format for this call
-        if ($this->responseFormat !== 'php') {
-            throw new Exception('This method only supports the `php` response format');
-        }
-
         $format = strtoupper($format);
         // If $format is not 'PNG', default to 'JPEG'
         if ($format != 'PNG') $format = 'JPEG';
@@ -474,33 +452,7 @@ class API
     private function fetch($method, $url, $call, array $params = array())
     {
         // Make the API call via the consumer
-        $response = $this->OAuth->fetch($method, $url, $call, $params);
-
-        // Format the response and return
-        switch ($this->responseFormat) {
-            case 'json':
-                return json_encode($response);
-            case 'jsonp':
-                $response = json_encode($response);
-                return $this->callback . '(' . $response . ')';
-            default:
-                return $response;
-        }
-    }
-
-    /**
-     * Set the API response format
-     * @param string $format One of php, json or jsonp
-     * @return void
-     */
-    public function setResponseFormat($format)
-    {
-        $format = strtolower($format);
-        if (!in_array($format, array('php', 'json', 'jsonp'))) {
-            throw new Exception("Expected a format of php, json or jsonp, got '$format'");
-        } else {
-            $this->responseFormat = $format;
-        }
+        return $this->OAuth->fetch($method, $url, $call, $params);
     }
 
     /**
@@ -517,16 +469,6 @@ class API
         } else {
             $this->chunkSize = $chunkSize;
         }
-    }
-
-    /**
-    * Set the JSONP callback function
-    * @param string $function
-    * @return void
-    */
-    public function setCallback($function)
-    {
-        $this->callback = $function;
     }
 
     /**
