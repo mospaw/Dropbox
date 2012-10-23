@@ -68,8 +68,7 @@ class API
      */
     public function accountInfo()
     {
-        $response = $this->fetch('POST', self::API_URL, 'account/info');
-        return $response;
+        return $this->fetch('POST', self::API_URL, 'account/info');
     }
 
     /**
@@ -94,8 +93,8 @@ class API
                     'file' => '@' . str_replace('\\', '/', $file) . ';filename=' . $filename,
                     'overwrite' => (int) $overwrite,
                 );
-                $response = $this->fetch('POST', self::CONTENT_URL, $call, $params);
-                return $response;
+                return $this->fetch('POST', self::CONTENT_URL, $call, $params);
+
             }
             throw new Exception('File exceeds 150MB upload limit');
         }
@@ -119,8 +118,7 @@ class API
         $path = $this->encodePath($filename);
         $call = 'files_put/' . $this->root . '/' . $path;
         $params = array('overwrite' => (int) $overwrite);
-        $response = $this->fetch('PUT', self::CONTENT_URL, $call, $params);
-        return $response;
+        return $this->fetch('PUT', self::CONTENT_URL, $call, $params);
     }
 
     /**
@@ -166,8 +164,8 @@ class API
                 $filename = (is_string($filename)) ? $filename : basename($file);
                 $call = 'commit_chunked_upload/' . $this->root . '/' . $this->encodePath($path . $filename);
                 $params = array('overwrite' => (int) $overwrite, 'upload_id' => $uploadID);
-                $response = $this->fetch('POST', self::CONTENT_URL, $call, $params);
-                return $response;
+                return $this->fetch('POST', self::CONTENT_URL, $call, $params);
+
             } else {
                 throw new Exception('Could not open ' . $file . ' for reading');
             }
@@ -233,8 +231,7 @@ class API
             'include_deleted' => (int) $deleted,
             'rev' => (is_string($rev)) ? $rev : null,
         );
-        $response = $this->fetch('POST', self::API_URL, $call, $params);
-        return $response;
+        return $this->fetch('POST', self::API_URL, $call, $params);
     }
 
     /**
@@ -248,8 +245,7 @@ class API
     {
         $call = 'delta';
         $params = array('cursor' => $cursor);
-        $response = $this->fetch('POST', self::API_URL, $call, $params);
-        return $response;
+        return $this->fetch('POST', self::API_URL, $call, $params);
     }
 
     /**
@@ -264,8 +260,7 @@ class API
         $params = array(
             'rev_limit' => ($limit < 1) ? 1 : (($limit > 1000) ? 1000 : (int) $limit),
         );
-        $response = $this->fetch('GET', self::API_URL, $call, $params);
-        return $response;
+        return $this->fetch('GET', self::API_URL, $call, $params);
     }
 
     /**
@@ -278,8 +273,7 @@ class API
     {
         $call = 'restore/' . $this->root . '/' . $this->encodePath($file);
         $params = array('rev' => $revision);
-        $response = $this->fetch('POST', self::API_URL, $call, $params);
-        return $response;
+        return $this->fetch('POST', self::API_URL, $call, $params);
     }
 
     /**
@@ -298,8 +292,7 @@ class API
             'file_limit' => ($limit < 1) ? 1 : (($limit > 1000) ? 1000 : (int) $limit),
             'include_deleted' => (int) $deleted,
         );
-        $response = $this->fetch('GET', self::API_URL, $call, $params);
-        return $response;
+        return $this->fetch('GET', self::API_URL, $call, $params);
     }
 
     /**
@@ -312,8 +305,7 @@ class API
     public function shares($path)
     {
         $call = 'shares/' . $this->root . '/' .$this->encodePath($path);
-        $response = $this->fetch('POST', self::API_URL, $call);
-        return $response;
+        return $this->fetch('POST', self::API_URL, $call);
     }
 
     /**
@@ -324,8 +316,7 @@ class API
     public function media($path)
     {
         $call = 'media/' . $this->root . '/' . $this->encodePath($path);
-        $response = $this->fetch('POST', self::API_URL, $call);
-        return $response;
+        return $this->fetch('POST', self::API_URL, $call);
     }
 
     /**
@@ -368,8 +359,7 @@ class API
     public function copyRef($path)
     {
         $call = 'copy_ref/' . $this->root . '/' . $this->encodePath($path);
-        $response = $this->fetch('GET', self::API_URL, $call);
-        return $response;
+        return $this->fetch('GET', self::API_URL, $call);
     }
 
     /**
@@ -393,8 +383,7 @@ class API
             $params['from_copy_ref'] = $fromCopyRef;
         }
 
-        $response = $this->fetch('POST', self::API_URL, $call, $params);
-        return $response;
+        return $this->fetch('POST', self::API_URL, $call, $params);
     }
 
     /**
@@ -406,8 +395,7 @@ class API
     {
         $call = 'fileops/create_folder';
         $params = array('root' => $this->root, 'path' => $this->normalisePath($path));
-        $response = $this->fetch('POST', self::API_URL, $call, $params);
-        return $response;
+        return $this->fetch('POST', self::API_URL, $call, $params);
     }
 
     /**
@@ -419,8 +407,7 @@ class API
     {
         $call = 'fileops/delete';
         $params = array('root' => $this->root, 'path' => $this->normalisePath($path));
-        $response = $this->fetch('POST', self::API_URL, $call, $params);
-        return $response;
+        return $this->fetch('POST', self::API_URL, $call, $params);
     }
 
     /**
@@ -437,8 +424,7 @@ class API
                 'from_path' => $this->normalisePath($from),
                 'to_path' => $this->normalisePath($to),
         );
-        $response = $this->fetch('POST', self::API_URL, $call, $params);
-        return $response;
+        return $this->fetch('POST', self::API_URL, $call, $params);
     }
 
     /**
