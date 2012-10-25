@@ -17,6 +17,8 @@ ini_set('html_errors', 'Off');
 session_start();
 
 // Register a simple autoload function
-spl_autoload_register(function($class) {
-	require_once('../Dropbox/' . implode('/', explode('_', $class)) . '.php');
-});
+function dropbox_api_autoloader($class) {
+    require_once('../Dropbox/' . implode('/', explode('_', $class)) . '.php');
+}
+
+spl_autoload_register('dropbox_api_autoloader');

@@ -100,7 +100,7 @@ abstract class OAuth_Consumer_ConsumerAbstract
         // Get the request/access token
         $token = $this->token;
         if (!$token) {
-            $token = new \stdClass();
+            $token = new stdClass();
             $token->oauth_token = null;
             $token->oauth_token_secret = null;
         }

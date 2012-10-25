@@ -52,11 +52,11 @@ if(!file_exists('oauth.token')) {
 
         // Write the access token to disk
         if(@file_put_contents('oauth.token', $token) === false){
-            throw new \Dropbox\Exception('Unable to write token to file');
+            throw new Exception('Unable to write token to file');
         } else {
             echo 'Setup complete! Running the test suite.';
         }
-    } catch(\Dropbox\Exception $e) {
+    } catch(Exception $e) {
         echo $e->getMessage() . PHP_EOL;
         exit('Setup failed! Please try running setup again.');
     }
