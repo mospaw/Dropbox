@@ -154,10 +154,7 @@ class API
                     }
 
                     // Set the data offset
-                    if (function_exists('mb_strlen'))
-                        $offset += mb_strlen($data, '8bit');
-                    else
-                        $offset += strlen($data);
+                    $offset += $this->chunkSize;
 
                     // Close the file handle for this chunk
                     fclose($chunkHandle);
