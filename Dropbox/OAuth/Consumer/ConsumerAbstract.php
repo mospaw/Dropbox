@@ -182,6 +182,9 @@ abstract class OAuth_Consumer_ConsumerAbstract
      * @param stdtclass $token A key secret pair
      */
     public function setToken($token) {
+        if (!is_object($token))
+            throw new Exception('Token is invalid.');
+
         $this->token = $token;
         return $this;
     }
