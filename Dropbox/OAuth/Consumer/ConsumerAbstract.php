@@ -242,6 +242,9 @@ abstract class OAuth_Consumer_ConsumerAbstract
     */
     private function parseTokenString($response)
     {
+        if (!$response)
+            throw new Exception('Response cannot be null');
+
         $parts = explode('&', $response);
         $token = new stdClass();
         foreach ($parts as $part) {
