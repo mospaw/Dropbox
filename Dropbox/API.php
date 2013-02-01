@@ -135,7 +135,7 @@ class API
             if ($handle = @fopen($file, 'r')) {
 
             	// Seek to the correct position on the file pointer
-				fseek($handle, $offset);
+                fseek($handle, $offset);
 
                 // Read from the file handle until EOF, uploading each chunk
                 while ($data = fread($handle, $this->chunkSize)) {
@@ -169,9 +169,9 @@ class API
                     }
 
                     // Set the data offset
-                	if (isset($response['body']->offset)) {
-						$offset = $response['body']->offset;
-					}
+                    if (isset($response['body']->offset)) {
+                        $offset = $response['body']->offset;
+                    }
 
                     // Close the file handle for this chunk
                     fclose($chunkHandle);
