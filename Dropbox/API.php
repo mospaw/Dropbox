@@ -349,11 +349,6 @@ class API
      */
     public function thumbnails($file, $format = 'JPEG', $size = 'small')
     {
-        // Only allow php response format for this call
-        if ($this->responseFormat !== 'php') {
-            throw new Exception('This method only supports the `php` response format');
-        }
-
         $format = strtoupper($format);
         // If $format is not 'PNG', default to 'JPEG'
         if ($format != 'PNG') $format = 'JPEG';
