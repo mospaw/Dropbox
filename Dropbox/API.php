@@ -175,9 +175,6 @@ class API
 
                     // Close the file handle for this chunk
                     fclose($chunkHandle);
-
-                    //Give Dropbox a chance to process the chunk
-                    usleep(10000);
                 }
 
                 // Complete the chunked upload
