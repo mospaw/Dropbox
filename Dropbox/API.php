@@ -35,6 +35,11 @@ class API
     private $chunkSize = 4194304;
 
     /**
+     * Object to track uploads
+     */
+    private $tracker;
+
+    /**
      * Set the OAuth consumer object
      * See 'General Notes' at the link below for information on access type
      * @link https://www.dropbox.com/developers/reference/api
@@ -60,6 +65,15 @@ class API
         } else {
             $this->root = $root;
         }
+    }
+
+     /**
+    * Set the tracker
+    * @param Tracker $tracker
+    */
+    public function setTracker($tracker)
+    {
+        $this->tracker = $tracker;
     }
 
     /**
@@ -171,6 +185,10 @@ class API
                     // Set the data offset
                     if (isset($response['body']->offset)) {
                         $offset = $response['body']->offset;
+                    }
+
+                    if ($this->tracker) {
+                        $this->tracker->track_upload($file, $uploadID, $offset);
                     }
 
                     // Close the file handle for this chunk
