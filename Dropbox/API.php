@@ -162,19 +162,19 @@ class API
                     $params = array('upload_id' => $uploadID, 'offset' => $offset);
 
                     try {
-                    	// Attempt to upload the current chunk
-                    	$response = $this->fetch('PUT', self::CONTENT_URL, 'chunked_upload', $params);
+                        // Attempt to upload the current chunk
+                        $response = $this->fetch('PUT', self::CONTENT_URL, 'chunked_upload', $params);
                     } catch (Exception $e) {
-                    	$response = $this->OAuth->getLastResponse();
-                    	if ($response['code'] == 400) {
-                    		// Incorrect offset supplied, return expected offset and upload ID
-                    		$uploadID = $response['body']->upload_id;
-                    		$offset = $response['body']->offset;
-                    		return array('uploadID' => $uploadID, 'offset' => $offset);
-                    	} else {
-                    		// Re-throw the caught Exception
-                    		throw $e;
-                    	}
+                        $response = $this->OAuth->getLastResponse();
+                        if ($response['code'] == 400) {
+                            // Incorrect offset supplied, return expected offset and upload ID
+                            $uploadID = $response['body']->upload_id;
+                            $offset = $response['body']->offset;
+                            return array('uploadID' => $uploadID, 'offset' => $offset);
+                        } else {
+                            // Re-throw the caught Exception
+                            throw $e;
+                        }
                     }
 
                     // On subsequent chunks, use the upload ID returned by the previous request
