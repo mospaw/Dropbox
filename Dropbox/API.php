@@ -166,12 +166,7 @@ class API
                         $response = $this->fetch('PUT', self::CONTENT_URL, 'chunked_upload', $params);
                     } catch (Exception $e) {
                         $response = $this->OAuth->getLastResponse();
-                        if ($response['code'] == 400) {
-                            // Incorrect offset supplied, return expected offset and upload ID
-                            $uploadID = $response['body']->upload_id;
-                            $offset = $response['body']->offset;
-                            return array('uploadID' => $uploadID, 'offset' => $offset);
-                        } else {
+                        if ($response['code'] != 400) {
                             // Re-throw the caught Exception
                             throw $e;
                         }
