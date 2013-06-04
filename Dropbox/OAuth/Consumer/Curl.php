@@ -165,6 +165,11 @@ class Curl extends ConsumerAbstract
      */
     private function parse($response)
     {
+        // cURL automatically handles Proxy rewrites, remove the "HTTP/1.0 200 Connection established" string
+        if (stripos($response, "HTTP/1.0 200 Connection established\r\n\r\n") !== false) {
+            $response = str_ireplace("HTTP/1.0 200 Connection established\r\n\r\n", '', $response);
+        }
+
         // Explode the response into headers and body parts (separated by double EOL)
         list($headers, $response) = explode("\r\n\r\n", $response, 2);
         
