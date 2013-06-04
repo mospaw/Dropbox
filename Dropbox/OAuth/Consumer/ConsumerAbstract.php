@@ -8,7 +8,7 @@
 * @subpackage Consumer
 */
 
-abstract class OAuth_Consumer_ConsumerAbstract
+abstract class Dropbox_OAuth_Consumer_ConsumerAbstract
 {
     // Dropbox web endpoint
     const WEB_URL = 'https://www.dropbox.com/1/';
