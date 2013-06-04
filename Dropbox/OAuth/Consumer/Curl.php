@@ -7,19 +7,8 @@
 * @package Dropbox\OAuth
 * @subpackage Consumer
 */
-namespace Dropbox\OAuth\Consumer;
 
-use Dropbox\API as API,
-    Dropbox\OAuth\Storage\StorageInterface as StorageInterface,
-    Dropbox\Exception,
-    Dropbox\Exception\BadRequestException,
-    Dropbox\Exception\CurlException,
-    Dropbox\Exception\NotAcceptableException,
-    Dropbox\Exception\NotFoundException,
-    Dropbox\Exception\NotModifiedException,
-    Dropbox\Exception\UnsupportedMediaTypeException;
-
-class OAuth_Consumer_Curl extends OAuth_Consumer_ConsumerAbstract
+class Dropbox_OAuth_Consumer_Curl extends OAuth_Consumer_ConsumerAbstract
 {
     /**
      * Default cURL options
@@ -125,7 +114,7 @@ class OAuth_Consumer_Curl extends OAuth_Consumer_ConsumerAbstract
             // Check if an error occurred and throw an Exception
             if (!empty($response['body']->error)) {
                 // Dropbox returns error messages inconsistently...
-                if ($response['body']->error instanceof \stdClass) {
+                if ($response['body']->error instanceof stdClass) {
                     $array = array_values((array) $response['body']->error);
                     $message = $array[0];
                 } else {
@@ -135,17 +124,17 @@ class OAuth_Consumer_Curl extends OAuth_Consumer_ConsumerAbstract
                 // Throw an Exception with the appropriate with the appropriate message and code
                 switch ($response['code']) {
                     case 304:
-                        throw new NotModifiedException($message, 304);
+                        throw new Dropbox_Exception_NotModifiedException($message, 304);
                     case 400:
-                        throw new BadRequestException($message, 400);
+                        throw new Dropbox_Exception_BadRequestException($message, 400);
                     case 404:
-                        throw new NotFoundException($message, 404);
+                        throw new Dropbox_Exception_NotFoundException($message, 404);
                     case 406:
-                        throw new NotAcceptableException($message, 406);
+                        throw new Dropbox_Exception_NotAcceptableException($message, 406);
                     case 415:
-                        throw new UnsupportedMediaTypeException($message, 415);
+                        throw new Dropbox_Exception_UnsupportedMediaTypeException($message, 415);
                     default:
-                        throw new Exception($message, $response['code']);
+                        throw new Dropbox_Exception_Exception($message, $response['code']);
                 }
             }
 
