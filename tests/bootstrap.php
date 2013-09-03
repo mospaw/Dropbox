@@ -7,7 +7,7 @@
 
 // Restrict access to the command line
 if (PHP_SAPI !== 'cli') {
-	exit('setup.php must be run via the command line interface');
+    exit('setup.php must be run via the command line interface');
 }
 
 // Set error reporting
@@ -17,8 +17,9 @@ ini_set('html_errors', 'Off');
 session_start();
 
 // Register a simple autoload function
-function dropbox_api_autoloader($class) {
-    require_once('../Dropbox/' . implode('/', explode('_', $class)) . '.php');
+function dropbox_api_autoloader($class)
+{
+    require_once '../Dropbox/'. implode('/', explode('_', $class)) . '.php');
 }
 
 spl_autoload_register('dropbox_api_autoloader');

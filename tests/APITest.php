@@ -1,9 +1,10 @@
 <?php
-class APITest extends PHPUnit_Framework_TestCase {
-
+class APITest extends PHPUnit_Framework_TestCase
+{
     private $api;
 
-    private function assertValidFile($localFile, $dropboxFile = false) {
+    private function assertValidFile($localFile, $dropboxFile = false)
+    {
         if (!$dropboxFile)
             $dropboxFile = basename($localFile);
 
@@ -16,12 +17,14 @@ class APITest extends PHPUnit_Framework_TestCase {
         );
     }
 
-    private function cleanUp($file) {
+    private function cleanUp($file)
+    {
         $response = $this->api->delete(basename($file));
         $this->assertEquals(200, $response['code']);
     }
 
-    public function setUp() {
+    public function setUp()
+    {
         $tokenData = unserialize(file_get_contents('oauth.token'));
 
         $OAuth = new Dropbox_OAuth_Consumer_Curl($tokenData['consumerKey'], $tokenData['consumerSecret']);
@@ -30,12 +33,14 @@ class APITest extends PHPUnit_Framework_TestCase {
         $this->api = new API($OAuth);
     }
 
-    public function testAccountInfo() {
+    public function testAccountInfo()
+    {
         $response = $this->api->accountInfo();
         $this->assertEquals(200, $response['code']);
     }
 
-    public function testPutFile() {
+    public function testPutFile()
+    {
         $response = $this->api->putFile(__FILE__);
 
         $this->assertEquals(200, $response['code']);
@@ -43,7 +48,8 @@ class APITest extends PHPUnit_Framework_TestCase {
         $this->cleanUp(__FILE__);
     }
 
-    public function testPutStream() {
+    public function testPutStream()
+    {
         $fh = fopen(__FILE__, 'r');
         $response = $this->api->putStream($fh, 'stream.txt');
 
@@ -52,8 +58,8 @@ class APITest extends PHPUnit_Framework_TestCase {
         $this->cleanUp('stream.txt');
     }
 
-    public function testChunkedUpload() {
-
+    public function testChunkedUpload()
+    {
         //Ceate a 10MB file to test
         $fh = fopen('bigFile.txt', 'w');
         for ($i = 0; $i < 102400; $i++) {

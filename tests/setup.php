@@ -7,18 +7,18 @@
 */
 
 // Require the bootstrap
-require_once('bootstrap.php');
+require_once 'bootstrap.php';
 
 // Check if a token is already stored
-if(!file_exists('oauth.token')) {
+if (!file_exists('oauth.token')) {
     echo 'Running Dropbox Test Suite Setup...' . PHP_EOL;
 
-    while(empty($consumerKey)){
+    while (empty($consumerKey)) {
         echo 'Please enter your consumer key: ';
         $consumerKey = trim(fgets(STDIN));
     }
 
-    while(empty($consumerSecret)){
+    while (empty($consumerSecret)) {
         echo 'Please enter your consumer secret: ';
         $consumerSecret = trim(fgets(STDIN));
     }
@@ -51,12 +51,12 @@ if(!file_exists('oauth.token')) {
         ));
 
         // Write the access token to disk
-        if(@file_put_contents('oauth.token', $token) === false){
+        if (@file_put_contents('oauth.token', $token) === false) {
             throw new Exception('Unable to write token to file');
         } else {
             echo 'Setup complete! Running the test suite.';
         }
-    } catch(Exception $e) {
+    } catch (Exception $e) {
         echo $e->getMessage() . PHP_EOL;
         exit('Setup failed! Please try running setup again.');
     }
