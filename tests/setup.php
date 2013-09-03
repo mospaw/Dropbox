@@ -25,7 +25,7 @@ if(!file_exists('oauth.token')) {
 
     try {
         // Set up the OAuth consumer
-        $OAuth = new OAuth_Consumer_Curl($consumerKey, $consumerSecret);
+        $OAuth = new Dropbox_OAuth_Consumer_Curl($consumerKey, $consumerSecret);
 
         $token = $OAuth->getRequestToken();
 

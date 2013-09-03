@@ -8,7 +8,7 @@
 * @subpackage Consumer
 */
 
-class OAuth_Consumer_Curl extends OAuth_Consumer_ConsumerAbstract
+class Dropbox_OAuth_Consumer_Curl extends Dropbox_OAuth_Consumer_ConsumerAbstract
 {
     /**
      * Default cURL options

@@ -24,7 +24,7 @@ class APITest extends PHPUnit_Framework_TestCase {
     public function setUp() {
         $tokenData = unserialize(file_get_contents('oauth.token'));
 
-        $OAuth = new OAuth_Consumer_Curl($tokenData['consumerKey'], $tokenData['consumerSecret']);
+        $OAuth = new Dropbox_OAuth_Consumer_Curl($tokenData['consumerKey'], $tokenData['consumerSecret']);
         $OAuth->setToken($tokenData['token']);
 
         $this->api = new API($OAuth);

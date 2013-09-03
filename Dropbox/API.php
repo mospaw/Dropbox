@@ -9,7 +9,7 @@
  * @package Dropbox
  */
 
-class API
+class Dropbox_API
 {
     // API Endpoints
     const API_URL     = 'https://api.dropbox.com/1/';
