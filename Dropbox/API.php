@@ -30,7 +30,7 @@ class Dropbox_API
 
     /**
      * Chunk size used for chunked uploads
-     * @see \Dropbox\API::chunkedUpload()
+     * @see \Dropbox_API::chunkedUpload()
      */
     private $chunkSize = 4194304;
 

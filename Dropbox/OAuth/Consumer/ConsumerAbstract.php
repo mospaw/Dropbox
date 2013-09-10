@@ -49,7 +49,7 @@ abstract class Dropbox_OAuth_Consumer_ConsumerAbstract
     */
     public function getRequestToken()
     {
-        $url = API::API_URL . self::REQUEST_TOKEN_METHOD;
+        $url = Dropbox_API::API_URL . self::REQUEST_TOKEN_METHOD;
         $response = $this->fetch('POST', $url, '');
 
         return $this->parseTokenString($response['body']);
@@ -83,7 +83,7 @@ abstract class Dropbox_OAuth_Consumer_ConsumerAbstract
     public function getAccessToken()
     {
         // Get the signed request URL
-        $response = $this->fetch('POST', API::API_URL, self::ACCESS_TOKEN_METHOD);
+        $response = $this->fetch('POST', Dropbox_API::API_URL, self::ACCESS_TOKEN_METHOD);
 
         return $this->parseTokenString($response['body']);
     }
