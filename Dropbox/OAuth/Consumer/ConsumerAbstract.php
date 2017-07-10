@@ -132,7 +132,8 @@ abstract class Dropbox_OAuth_Consumer_ConsumerAbstract
             if ($value !== null) {
                 // If the value is a file upload (prefixed with @), replace it with
                 // the destination filename, the file path will be sent in POSTFIELDS
-                if (isset($value[0]) && $value[0] === '@') $value = $params['filename'];
+                //if (isset($value[0]) && $value[0] === '@') $value = $params['filename'];
+                if ($value instanceof CURLFile) $value = $params['filename'];
                 $encoded[] = $this->encode($param) . '=' . $this->encode($value);
             } else {
                 unset($params[$param]);
