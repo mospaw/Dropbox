@@ -104,7 +104,7 @@ class Dropbox_API
                 $filename = (is_string($filename)) ? $filename : basename($file);
                 $params = array(
                     'filename' => $filename,
-                    'file' => new CURLFile(str_replace('\\', '/', $file), "application/octet-stream", $filename)
+                    'file' => new CURLFile(str_replace('\\', '/', $file), "application/octet-stream", $filename),
                     'overwrite' => (int) $overwrite,
                 );
 
